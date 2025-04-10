@@ -431,6 +431,10 @@ class SynchroniseSalesOrder(SynchroniseWooCommerce):
         self.create_and_link_payment_entry(wc_order, new_sales_order)
         new_sales_order.save()
 
+        sales_invoice = make_sales_invoice(new_sales_order.name)
+        sales_invoice.insert()
+        sales_invoice.submit()
+
     def create_or_link_customer_and_address(self, wc_order: WooCommerceOrder) -> str:
         """
         Create or update Customer and Address records, with special handling for guest orders using order ID.
