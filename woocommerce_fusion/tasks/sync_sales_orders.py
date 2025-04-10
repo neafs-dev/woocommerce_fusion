@@ -3,7 +3,7 @@ from datetime import datetime
 from typing import Dict, Optional
 
 import frappe
-from erpnext.selling.doctype.sales_order.sales_order import SalesOrder, make_sales_invoice
+from erpnext.selling.doctype.sales_order.sales_order import SalesOrder, make_sales_invoice, make_delivery_note
 from frappe import _
 from frappe.utils import get_datetime
 from frappe.utils.data import cstr, now
@@ -243,6 +243,15 @@ class SynchroniseSalesOrder(SynchroniseWooCommerce):
                 sales_invoice.insert()
                 sales_invoice.submit()
 
+            if woocommerce_order.status == "completed":
+                sales_invoice = make_sales_invoice(sales_order.name)
+                sales_invoice.insert()
+                sales_invoice.submit()
+
+                delivery_note = make_delivery_note(sales_order.name)
+                delivery_note.insert()
+                delivery_note.submit()
+
     def create_and_link_payment_entry(self, wc_order: WooCommerceOrder, sales_order: SalesOrder) -> bool:
         """
         Create a Payment Entry for a WooCommerce Order that has been marked as Paid
@@ -436,6 +445,15 @@ class SynchroniseSalesOrder(SynchroniseWooCommerce):
             sales_invoice = make_sales_invoice(new_sales_order.name)
             sales_invoice.insert()
             sales_invoice.submit()
+
+        if wc_order.status == "completed":
+            sales_invoice = make_sales_invoice(new_sales_order.name)
+            sales_invoice.insert()
+            sales_invoice.submit()
+
+            delivery_note = make_delivery_note(new_sales_order.name)
+            delivery_note.insert()
+            delivery_note.submit()
 
     def create_or_link_customer_and_address(self, wc_order: WooCommerceOrder) -> str:
         """
