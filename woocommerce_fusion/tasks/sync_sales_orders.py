@@ -238,9 +238,10 @@ class SynchroniseSalesOrder(SynchroniseWooCommerce):
                 sales_order.flags.created_by_sync = True
                 sales_order.save()
 
-            sales_invoice = make_sales_invoice(sales_order.name)
-            sales_invoice.insert()
-            sales_invoice.submit()
+            if woocommerce_order.status == "processing":
+                sales_invoice = make_sales_invoice(sales_order.name)
+                sales_invoice.insert()
+                sales_invoice.submit()
 
     def create_and_link_payment_entry(self, wc_order: WooCommerceOrder, sales_order: SalesOrder) -> bool:
         """
@@ -431,9 +432,10 @@ class SynchroniseSalesOrder(SynchroniseWooCommerce):
         self.create_and_link_payment_entry(wc_order, new_sales_order)
         new_sales_order.save()
 
-        sales_invoice = make_sales_invoice(new_sales_order.name)
-        sales_invoice.insert()
-        sales_invoice.submit()
+        if wc_order.status == "processing":
+            sales_invoice = make_sales_invoice(new_sales_order.name)
+            sales_invoice.insert()
+            sales_invoice.submit()
 
     def create_or_link_customer_and_address(self, wc_order: WooCommerceOrder) -> str:
         """
