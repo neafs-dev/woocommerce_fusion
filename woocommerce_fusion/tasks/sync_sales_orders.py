@@ -244,9 +244,9 @@ class SynchroniseSalesOrder(SynchroniseWooCommerce):
                 sales_invoice.submit()
 
             if woocommerce_order.status == "completed":
-                sales_invoice = make_sales_invoice(sales_order.name)
-                sales_invoice.insert()
-                sales_invoice.submit()
+                # sales_invoice = make_sales_invoice(sales_order.name)
+                # sales_invoice.insert()
+                # sales_invoice.submit()
 
                 delivery_note = make_delivery_note(sales_order.name)
                 delivery_note.insert()
