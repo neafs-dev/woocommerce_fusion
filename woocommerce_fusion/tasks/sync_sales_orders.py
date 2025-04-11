@@ -252,6 +252,9 @@ class SynchroniseSalesOrder(SynchroniseWooCommerce):
                 delivery_note.insert()
                 delivery_note.submit()
 
+            if woocommerce_order.status == "cancelled":
+                sales_order.cancel()
+
     def create_and_link_payment_entry(self, wc_order: WooCommerceOrder, sales_order: SalesOrder) -> bool:
         """
         Create a Payment Entry for a WooCommerce Order that has been marked as Paid
@@ -454,6 +457,9 @@ class SynchroniseSalesOrder(SynchroniseWooCommerce):
             delivery_note = make_delivery_note(new_sales_order.name)
             delivery_note.insert()
             delivery_note.submit()
+
+        if wc_order.status == "cancelled":
+            new_sales_order.cancel()
 
     def create_or_link_customer_and_address(self, wc_order: WooCommerceOrder) -> str:
         """
