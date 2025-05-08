@@ -445,21 +445,33 @@ class SynchroniseSalesOrder(SynchroniseWooCommerce):
         new_sales_order.save()
 
         if wc_order.status == "processing":
-            sales_invoice = make_sales_invoice(new_sales_order.name)
-            sales_invoice.insert()
-            sales_invoice.submit()
+            try:
+                sales_invoice = make_sales_invoice(new_sales_order.name)
+                sales_invoice.insert()
+                sales_invoice.submit()
+            except:
+                pass
 
         if wc_order.status == "completed":
-            sales_invoice = make_sales_invoice(new_sales_order.name)
-            sales_invoice.insert()
-            sales_invoice.submit()
+            try:
+                sales_invoice = make_sales_invoice(new_sales_order.name)
+                sales_invoice.insert()
+                sales_invoice.submit()
+            except:
+                pass
 
-            delivery_note = make_delivery_note(new_sales_order.name)
-            delivery_note.insert()
-            delivery_note.submit()
+            try:
+                delivery_note = make_delivery_note(new_sales_order.name)
+                delivery_note.insert()
+                delivery_note.submit()
+            except:
+                pass
 
         if wc_order.status == "cancelled":
-            new_sales_order.cancel()
+            try:
+                new_sales_order.cancel()
+            except:
+                pass
 
     def create_or_link_customer_and_address(self, wc_order: WooCommerceOrder) -> str:
         """
