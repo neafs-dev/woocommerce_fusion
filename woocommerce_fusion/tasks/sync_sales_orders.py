@@ -3,7 +3,7 @@ from datetime import datetime
 from typing import Dict, Optional, Tuple, Union
 
 import frappe
-from erpnext.selling.doctype.sales_order.sales_order import SalesOrder
+from erpnext.selling.doctype.sales_order.sales_order import SalesOrder, make_sales_invoice, make_delivery_note
 from erpnext.selling.doctype.sales_order_item.sales_order_item import SalesOrderItem
 from frappe import _
 from frappe.utils import get_datetime
@@ -261,6 +261,23 @@ class SynchroniseSalesOrder(SynchroniseWooCommerce):
 			if so_dirty:
 				sales_order.flags.created_by_sync = True
 				sales_order.save()
+			
+			if woocommerce_order.status == "processing":
+				sales_invoice = make_sales_invoice(sales_order.name)
+				sales_invoice.insert()
+				sales_invoice.submit()
+
+			if woocommerce_order.status == "completed":
+				# sales_invoice = make_sales_invoice(sales_order.name)
+				# sales_invoice.insert()
+				# sales_invoice.submit()
+
+				delivery_note = make_delivery_note(sales_order.name)
+				delivery_note.insert()
+				delivery_note.submit()
+
+			if woocommerce_order.status == "cancelled":
+				sales_order.cancel()
 
 	def create_and_link_payment_entry(
 		self, wc_order: WooCommerceOrder, sales_order: SalesOrder
@@ -529,6 +546,35 @@ class SynchroniseSalesOrder(SynchroniseWooCommerce):
 		new_sales_order.reload()
 		self.create_and_link_payment_entry(wc_order, new_sales_order)
 		new_sales_order.save()
+
+		if wc_order.status == "processing":
+			try:
+				sales_invoice = make_sales_invoice(new_sales_order.name)
+				sales_invoice.insert()
+				sales_invoice.submit()
+			except:
+				pass
+
+		if wc_order.status == "completed":
+			try:
+				sales_invoice = make_sales_invoice(new_sales_order.name)
+				sales_invoice.insert()
+				sales_invoice.submit()
+			except:
+				pass
+
+			try:
+				delivery_note = make_delivery_note(new_sales_order.name)
+				delivery_note.insert()
+				delivery_note.submit()
+			except:
+				pass
+
+		if wc_order.status == "cancelled":
+			try:
+				new_sales_order.cancel()
+			except:
+				pass
 
 	def create_or_link_customer_and_address(self, wc_order: WooCommerceOrder) -> str:
 		"""
