@@ -267,13 +267,15 @@ class SynchroniseItem(SynchroniseWooCommerce):
 		if item.item.item_name != woocommerce_product.woocommerce_name:
 			item.item.item_name = woocommerce_product.woocommerce_name
 			item_dirty = True
-
-		fields_updated, item.item = self.set_item_fields(item=item.item)
-
+		
 		try:
-			item.item.custom_sku = woocommerce_product.sku
+			if item.item.custom_sku != woocommerce_product.get("sku"):
+				item.item.custom_sku = woocommerce_product.get("sku")
+				item_dirty = True
 		except:
 			pass
+
+		fields_updated, item.item = self.set_item_fields(item=item.item)
 
 		wc_server = frappe.get_cached_doc("WooCommerce Server", woocommerce_product.woocommerce_server)
 		if wc_server.enable_image_sync and "images" in woocommerce_product and woocommerce_product.images is not None:
@@ -431,7 +433,7 @@ class SynchroniseItem(SynchroniseWooCommerce):
 		item.flags.created_by_sync = True
 
 		try:
-			item.custom_sku = wc_product.sku
+			item.custom_sku = wc_product.get("sku")
 		except:
 			pass
 
