@@ -311,6 +311,10 @@ class SynchroniseItem(SynchroniseWooCommerce):
 		except:
 			pass
 
+		if not wc_product.get("regular_price"):
+			wc_product.regular_price = "0"
+			wc_product_dirty = True
+
 		product_fields_changed, wc_product = self.set_product_fields(wc_product, item)
 		if product_fields_changed:
 			wc_product_dirty = True
