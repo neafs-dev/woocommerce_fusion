@@ -303,6 +303,13 @@ class SynchroniseItem(SynchroniseWooCommerce):
 		if wc_product.woocommerce_name != item.item.item_name:
 			wc_product.woocommerce_name = item.item.item_name
 			wc_product_dirty = True
+		
+		try:
+			if wc_product.sku != item.item.custom_sku:
+				wc_product.sku = item.item.custom_sku
+				wc_product_dirty = True
+		except:
+			pass
 
 		product_fields_changed, wc_product = self.set_product_fields(wc_product, item)
 		if product_fields_changed:
